@@ -5,36 +5,57 @@
 const contactForm = document.querySelector("#contact-form");
 
 if (contactForm) {
-
-    contactForm.addEventListener("submit", function (event) {
-
+    contactForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const nameInput = document.querySelector("#name");
+        const emailInput = document.querySelector("#email");
+        const messageInput = document.querySelector("#message");
         const formMessage = document.querySelector("#form-message");
 
-        const name = nameInput ? nameInput.value.trim() : "there";
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const message = messageInput.value.trim();
 
-        // Show success message
-        if (formMessage) {
-            formMessage.textContent =
-                "Thank you, " + name + "! Your message has been received.";
-            formMessage.classList.add("show");
-        } else {
-            alert(
-                "Thank you, " +
-                name +
-                "! Your message has been received."
-            );
+        try {
+            const response = await fetch("/api/contact", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    message: message
+                })
+            });
+
+            const data = await response.json();
+
+            if (formMessage) {
+                formMessage.textContent = data.message;
+                formMessage.classList.add("show");
+            } else {
+                alert(data.message);
+            }
+
+            if (response.ok) {
+                contactForm.reset();
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
+
+            if (formMessage) {
+                formMessage.textContent =
+                    "Something went wrong. Please try again.";
+                formMessage.classList.add("show");
+            } else {
+                alert("Something went wrong. Please try again.");
+            }
         }
-
-        // Clear form
-        contactForm.reset();
-
     });
-
 }
-
 
 // ===============================
 // MOBILE NAVIGATION
