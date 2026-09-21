@@ -1,11 +1,7 @@
-const express = require("express");
-
-const app = express();
-
-app.use(express.json());
-
-app.get("/api", (req, res) => {
-  res.json({ message: "Backend is working!" });
-});
-
-module.exports = app;
+module.exports = (req, res) => {
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({
+    message: "Backend is working!"
+  }));
+};
